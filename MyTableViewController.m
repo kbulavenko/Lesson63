@@ -10,7 +10,7 @@
 
 @interface   MyTableViewController()
 
--(void)loadDataFromDB;
+//-(void)loadDataFromDB;
 
 @end
 
@@ -22,8 +22,8 @@
 {
     self = [super init];
     if (self) {
-        self->countRows   = 1000;
-        self->endRow      = self->countRows + 1;
+        self->countRows   = 50;
+//self->endRow      = self->countRows + 1;
         self->startRow   = -1000;      //  Инициализируем в значение которое не попадет в диапазхон [startRow ; startRow + countRows];
         // чтобы обязательно вызвать
         self->arrRow    = [NSMutableArray array];
@@ -34,19 +34,11 @@
             return nil;
         }
         
-        self->cmdInsert   =  @"INSERT INTO products (name, price, weight) VALUSES (?, ? , ?)";
+        self->cmdInsert   =  @"INSERT INTO products (name, weight, price) VALUES (?, ? , ?)";
         self->cmdDelete   =  @"DELETE FROM products WHERE id = ?";
-        self->cmdUpdate   =  @"UPDATE products SET name = ?, price = ?, weight = ? WHERE id = ?";
-        
-        
+        self->cmdUpdate   =  @"UPDATE products SET name = ?, weight = ?, price = ? WHERE id = ?";
         
         [self->db open];
-        [self loadDataFromDB];
-        
-//        for (int i = 0; <#condition#>; <#increment#>) {
-//            <#statements#>
-//        }
-        
     }
     return self;
 }
@@ -67,7 +59,7 @@
     FMResultSet   *res  =   [db executeQuery:@"SELECT COUNT(*) AS cnt FROM products"];
     if([res next])
     {
-        return [res intForColumn:@"cnt"];
+        return [res intForColumn:@"cnt"] ;
     }
     else
     {
@@ -146,7 +138,7 @@
 - (nullable id)tableView:(NSTableView *)tableView objectValueForTableColumn:(nullable NSTableColumn *)tableColumn row:(NSInteger)row
 {
    //
-    if([tableColumn.identifier isEqualToString: @"id"])
+   /* if([tableColumn.identifier isEqualToString: @"id"])
     {
         return [self->arrRow  objectAtIndex:  row ][@"id"];
 
@@ -168,18 +160,48 @@
         return [self->arrRow  objectAtIndex:   row ][@"weight"];
         return  @"000";
     }
-    return @"Пусто!";
+    return @"Пусто!";*/
+    
+    NSDictionary	*dict	= [self getRowAtIndex : (int)row];
+  //  NSLog(@"%@",dict);
+    if ([tableColumn.identifier isEqualToString : @"id"])
+    {
+        return	[dict objectForKey : @"id"];
+    }
+    else
+    if ([tableColumn.identifier isEqualToString : @"name"])
+    {
+        return	[dict objectForKey : @"name"];
+    }
+    else
+    if ([tableColumn.identifier isEqualToString : @"price"])
+    {
+        return	[dict objectForKey : @"price"];
+    }
+    else
+    if ([tableColumn.identifier isEqualToString : @"weight"])
+    {
+        return	[dict objectForKey : @"weight"];
+    }
+    else
+    {
+        return	@"N/A";
+    }
 }
 
-
+/*
 -(void)loadDataFromDB
 {
     
     [self->db open];
     
     //  FMResultSet	*result = [self->db executeQuery :[NSString    stringWithFormat:  @"SELECT * FROM products  LIMIT %i WHERE ID >= %i AND ID < %i",self->countRows, self->startRow, self->startRow + self->countRows]];
-    NSLog(@"%@", [NSString    stringWithFormat:  @"SELECT * FROM products   WHERE ID >= %i AND ID <= %i LIMIT %i", self->startRow, self->startRow + self->countRows , /*self->countRows*/ 1000]);
-    FMResultSet	*result = [self->db executeQuery : [NSString    stringWithFormat:  @"SELECT * FROM products   WHERE ID >= %i AND ID <= %i LIMIT %i", self->startRow, self->startRow + self->countRows , /*self->countRows*/ 1000]];
+    NSLog(@"%@", [NSString    stringWithFormat:  @"SELECT * FROM products   WHERE ID >= %i AND ID <= %i LIMIT %i", self->startRow, self->startRow + self->countRows , 
+ //self->countRows 
+ 1000]);
+    FMResultSet	*result = [self->db executeQuery : [NSString    stringWithFormat:  @"SELECT * FROM products   WHERE ID >= %i AND ID <= %i LIMIT %i", self->startRow, self->startRow + self->countRows , 
+ // self->countRows
+ 1000]];
     int count  = 0;
     while([result next] && count < self->countRows)
     {
@@ -194,9 +216,9 @@
     [result close];
 
 }
+*/
 
-
-
+/*
 -(void)reloadDataFromDB
 {
     
@@ -219,8 +241,8 @@
     [result close];
     
 }
-
--(NSDictionary*) getRowAtШndex  : (int) index
+*/
+-(NSDictionary*) getRowAtIndex  : (int) index
 {
 //   Проверки:
     // 1. Запрашиваема строка ВООБЩЕ не из буфера
@@ -243,13 +265,15 @@
 //        FMResultSet    *res   = [self->db executeQuery:@""];
 //    }
     
-    return nil;
+   //return nil;
 }
 
 -(void) reloadBuffer  : (int) startIndex
 {
     [self->arrRow  removeAllObjects];
-    FMResultSet  *result   =  [self->db executeQuery:@"SELECT * FROM products LIMIT ?, ?", self->startRow, self->countRows];
+    
+    self->startRow  = startIndex;
+    FMResultSet  *result   =  [self->db executeQuery: [NSString stringWithFormat:  @"SELECT * FROM products LIMIT %i, %i", self->startRow, self->countRows]];
     while ([result next])
     {
         NSDictionary *dict  =  @{ @"id"     :   @([result intForColumn      : @"id"]),
@@ -263,5 +287,82 @@
     [result close];
 }
 
+-(void) deleteRow: (int) index
+{
+    NSDictionary    *dict  = [self getRowAtIndex: index];
+    [self->db executeUpdate: self->cmdDelete, [dict objectForKey:@"id"]];
+    //[self->arrRow removeObject: dict];
+    [self reloadBuffer: self->startRow];
+}
+
+
+
+-(void) addRow : (NSDictionary *) dict
+{
+//    NSDictionary    *dict  = [self getRowAtIndex: index];
+    [self->db executeUpdate: self->cmdInsert, [dict objectForKey:@"name"],[dict objectForKey:@"weight"],[dict objectForKey:@"price"]];
+    //[self->arrRow removeObject: dict];
+    [self reloadBuffer: self->startRow];
+}
+
+-(void) editRow: (NSDictionary *) dict
+{
+   // NSDictionary    *dict  = [self getRowAtIndex: index];
+    [self->db executeUpdate: self->cmdUpdate, [dict objectForKey:@"name"],[dict objectForKey:@"weight"],[dict objectForKey:@"price"],[dict objectForKey:@"id"]];
+    //[self->arrRow removeObject: dict];
+    [self reloadBuffer: self->startRow];
+}
 
 @end
+
+
+/*
+ Доделать
+ пользователь вводит новый товар
+ add  Диалоговое окно
+ Название цену и вес  
+ Cancel Ok   
+ Проверить правильность введенных данных  
+ 
+ При редактирование такое же окно но с введенными (считанными) данными 
+ Название цена вес 
+ Выделенных нет  Алерты
+ 
+ SQL - Агрегирующие функции
+ —————————————————————
+ 
+ MIN    MAX   AVG   SUM    COUNT
+ 
+ Агрегирующие функции предназначены  для получения обобщающего значения по столбцу
+ 
+ Эти функции в качестве параметра принимают название столбца
+ И возвращают одно единственное значение
+ 
+ Агрегирующие ф-и являются стандартными ф-ми языка  SQL
+ 
+ MIN   - минимальное значение в столбце
+ 
+ SELECT MIN(price) FROM products;
+ 
+ SELECT MIN(price), MIN(weight) FROM products;
+ 
+ MAX   - максимальное значение в столбце
+ 
+ SELECT MAX(price) FROM products;
+ 
+ SELECT MAX(price), MAX(weight) FROM products;
+ 
+ AVG  среднее арифметическое
+ 
+ SELECT AVG(price)  FROM products;
+ 
+ SELECT AVG(price)  FROM products WHERE weight > 45;
+ 
+ SUM -  суммирует все значения в столбце   
+ 
+ COUNT на следующем занятии
+ ВЫполняет подсчет количсетва строк
+ 
+ 
+ */
+

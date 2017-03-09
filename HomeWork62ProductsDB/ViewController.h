@@ -9,11 +9,13 @@
 #import <Cocoa/Cocoa.h>
 //#import "FMDB.h"
 #import "MyTableViewController.h"
-
+#import "MyOneRowView.h"
 
 @interface ViewController : NSViewController
 {
     MyTableViewController     *MTVC;
+    MyOneRowView              *MORV;
+    int                       selectedId;
 }
 
 @property  MyTableViewController     *MTVC;

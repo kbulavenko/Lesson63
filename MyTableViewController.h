@@ -18,7 +18,7 @@ static  NSString   *MyTableViewControllerBufferRotationNeedTableViewReload = @"M
     int                                 startRow;   // Номер стартовой строки из буфера
     NSMutableArray<NSDictionary *>      *arrRow;   // Буфер
     int                                 countRows;
-    int                                 endRow;    // Номер конечной строки в диапазоне
+  //  int                                 endRow;    // Номер конечной строки в диапазоне
     
     NSString                            *cmdInsert;
     NSString                            *cmdDelete;
@@ -40,6 +40,9 @@ static  NSString   *MyTableViewControllerBufferRotationNeedTableViewReload = @"M
 -(NSDictionary*) getRowAtIndex  : (int) index;
 //-(void)loadDataFromDB;
 -(void) reloadBuffer  : (int) startIndex;
+-(void) deleteRow: (int) index;
 
+-(void) addRow : (NSDictionary *) dict;
+-(void) editRow: (NSDictionary *) dict;
 
 @end
