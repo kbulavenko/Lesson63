@@ -27,11 +27,11 @@
         
         if(self->isOperationEdit )
         {
-            NSLog(@"ev = %@", ev);
-            self->name.stringValue   = [ self->editValues[@"name"] copy];
-            self->weight.stringValue   = [ self->editValues[@"weight"] copy];
-            self->price.stringValue   = [ self->editValues[@"price"] copy];
-            NSLog(@"self->editValues[@\"name\"] =  %@", self->editValues[@"name"]);
+          //  NSLog(@"ev = %@", ev);
+          //  self->name.stringValue   = [ self->editValues[@"name"] copy];
+          //  self->weight.stringValue   = [ self->editValues[@"weight"] copy];
+          //  self->price.stringValue   = [ self->editValues[@"price"] copy];
+            //NSLog(@"self->editValues[@\"name\"] =  %@", self->editValues[@"name"]);
             
             
         }

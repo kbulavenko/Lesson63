@@ -176,12 +176,12 @@
     else
     if ([tableColumn.identifier isEqualToString : @"price"])
     {
-        return	[dict objectForKey : @"price"];
+        return	[NSString    stringWithFormat:@"%@",  [dict objectForKey : @"price"] ];
     }
     else
     if ([tableColumn.identifier isEqualToString : @"weight"])
     {
-        return	[dict objectForKey : @"weight"];
+        return	[NSString    stringWithFormat:@"%@",[dict objectForKey : @"weight"]];
     }
     else
     {
@@ -279,9 +279,10 @@
         NSDictionary *dict  =  @{ @"id"     :   @([result intForColumn      : @"id"]),
                                                 @"name"   :   [result stringForColumn     : @"name"],
                                                 @"weight" :   @([result intForColumn      : @"weight"]),
-                                                @"price"  :   @([result doubleForColumn   : @"price"])
+                                                @"price"  :   [NSNumber   numberWithDouble: [result doubleForColumn  : @"price"]]
                                                 };
         [self->arrRow  addObject: dict];
+       // NSLog(@"dict = %@", dict);
 
     }
     [result close];

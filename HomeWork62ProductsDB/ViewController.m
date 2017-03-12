@@ -122,14 +122,14 @@
             NSDictionary     *dict =  [self->MTVC   getRowAtIndex: (int)[self.tableView  selectedRow]];
             
             self->selectedId  =   [dict[@"id"] intValue];
-            NSLog(@"%@", dict);
+           // NSLog(@"%@", dict);
             self->MORV = [[MyOneRowView  alloc]  initWithNibName: @"MyOneRowView" bundle: nil operationType: true editValues: dict];
             [self->MORV  presentViewControllerAsModalWindow: self->MORV];
             
             self->MORV.name.stringValue   =  [dict[@"name"] copy];
             
-            self->MORV.weight.stringValue   =  [dict[@"weight"] copy];
-            self->MORV.price.stringValue   =  [dict[@"price"] copy];
+            self->MORV.weight.stringValue   = [NSString   stringWithFormat:@"%i",[dict[@"weight"] intValue] ];
+            self->MORV.price.stringValue   =  [NSString   stringWithFormat:@"%5.2lf",[dict[@"price"] doubleValue] ];
             
             
             
